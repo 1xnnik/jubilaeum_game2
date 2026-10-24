@@ -2,7 +2,16 @@
 
 Suchspiel für vier Teams mit je einer Person, angelehnt an die Oberfläche von [jeoparty_Jubil-um](https://github.com/1xnnik/jeoparty_Jubil-um). Dunkelblau, Gold, Jubiläumslogo und feste Punktekarten wie in der Vorlage.
 
-## Start
+## Windows: per Doppelklick spielen
+
+1. Node.js 24 LTS von https://nodejs.org/ installieren.
+2. Das Repository herunterladen und die ZIP-Datei vollstaendig entpacken.
+3. `Start.bat` doppelklicken. Beim ersten Start werden die Abhaengigkeiten installiert (Internet erforderlich). Danach oeffnet sich das Spiel im Browser.
+4. Zum Beenden `Stop.bat` doppelklicken. Es wird nur der von `Start.bat` gestartete Spielserver dieses Ordners beendet. Der Browser-Spielstand bleibt erhalten.
+
+Ein erneuter Start oeffnet das bereits laufende Spiel. Falls der Browser nicht automatisch startet, die angezeigte Adresse manuell oeffnen. Startfehler stehen in `.bringsmit-runtime/server.log`. Standardport: 5173; optional vor Start `BRINGSMIT_PORT` setzen und fuer Start und Stop denselben Wert verwenden. Spiele aus demselben Ordner und mit demselben Browserprofil, um gespeicherte Spielstaende fortzusetzen.
+
+## Start im Terminal
 
 Voraussetzung: Node.js 20.19+ oder 22.12+ und npm.
 
