@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ItemImage } from './ItemImage';
 
 const KEY = 'jubilaeum-brings-mit-v1';
-const defaults = ['Eine Rolle Klopapier', 'Eine Zigarettenschachtel', 'Einen Schlüsselbund', 'Eine Sonnenbrille', 'Eine Münze', 'Einen Kugelschreiber', 'Ein Taschentuch', 'Eine Armbanduhr', 'Einen Flaschenöffner', 'Einen Kamm oder eine Bürste', 'Einen Kassenbon', 'Eine Socke', 'Einen Lippenpflegestift', 'Eine Packung Kaugummi', 'Ein Bier'];
+const defaults = ['Eine Rolle Klopapier', 'Eine Zigarettenschachtel', 'Einen Schlüsselbund', 'Eine Sonnenbrille', 'Eine Münze', 'Einen Kugelschreiber', 'Ein Taschentuch', 'Eine Armbanduhr', 'Einen Flaschenöffner', 'Ein leeres Bierglas', 'Einen Kassenbon', 'Eine Socke', 'Einen Lippenpflegestift', 'Eine Packung Kaugummi', 'Ein Bier'];
 const defaultImages = defaults.map((_, i) => `/items/${i + 1}.svg`);
 const colors = ['#cba34c', '#7ba9c9', '#a68ac9', '#74aa8c'];
 type Game = { names: string[]; items: string[]; images: string[]; scores: number[]; results: (number | null)[]; active: boolean };
@@ -10,6 +10,10 @@ const fresh = (): Game => ({ names: ['Team 1', 'Team 2', 'Team 3', 'Team 4'], it
 function load(): Game {
   try {
     const g = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (Array.isArray(g?.items) && g.items[9] === 'Einen Kamm oder eine Bürste') {
+      g.items[9] = defaults[9];
+      if (Array.isArray(g.images)) g.images[9] = defaultImages[9];
+    }
     if (Array.isArray(g?.items) && g.items[14] === 'Einen Gegenstand mit Herz') {
       g.items[14] = defaults[14];
       if (Array.isArray(g.images)) g.images[14] = defaultImages[14];

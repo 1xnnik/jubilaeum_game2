@@ -6,6 +6,7 @@ export function ItemImage({ src, alt, className }: { src: string; alt: string; c
   const clipId = useId();
   const match = /^\/items\/(\d+)\.svg$/.exec(src);
   const index = match ? Number(match[1]) - 1 : -1;
+  if (index === 9) return <img className={className} src="/items/empty-beer-glass-photo.png" alt={alt} data-source={src} />;
   if (index === 14) return <img className={className} src="/items/beer-photo.png" alt={alt} data-source={src} />;
   if (index < 0 || index > 14) return <img className={className} src={src} alt={alt} />;
   const row = Math.floor(index / 5);
