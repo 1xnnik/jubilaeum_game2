@@ -55,9 +55,9 @@ test('all pictures load, old scores migrate and reveal fits desktop and mobile',
   }
   for (let round = 1; round <= 15; round++) {
     const picture = page.locator('.item-image');
-    await expect(picture).toHaveAttribute('src', `/items/${round}.svg`);
-    await expect.poll(() => picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
-    await expect(picture).toHaveAttribute('alt', await page.locator('.item-reveal h2').innerText());
+    await expect(picture).toHaveAttribute('data-source', `/items/${round}.svg`);
+    await expect.poll(() => picture.locator('image').evaluate(async (el: SVGImageElement) => { const img = new Image(); img.src = el.href.baseVal; try { await img.decode(); return img.naturalWidth === 1619; } catch { return false; } })).toBe(true);
+    await expect(picture).toHaveAttribute('aria-label', await page.locator('.item-reveal h2').innerText());
     await page.getByRole('button', { name: round === 15 ? 'Spiel beenden' : 'Nächste Runde' }).click();
   }
 });
@@ -78,5 +78,5 @@ test('custom uploaded picture survives reload and can be restored', async ({ pag
   await page.getByRole('button', { name: 'Neues Spiel', exact: true }).click();
   await page.getByRole('button', { name: 'Teams & Gegenstände' }).click();
   await page.getByRole('button', { name: 'Standardbild verwenden' }).first().click();
-  await expect(page.locator('.item-thumbnail').first()).toHaveAttribute('src', '/items/1.svg');
+  await expect(page.locator('.item-thumbnail').first()).toHaveAttribute('data-source', '/items/1.svg');
 });

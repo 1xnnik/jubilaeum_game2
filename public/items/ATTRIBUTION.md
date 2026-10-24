@@ -1,3 +1,9 @@
+# Aktuelle Standardbilder
+
+`objects-photo.png` wurde für dieses Spiel mit KI als fotorealistische Produktbildtafel generiert. Die einzelnen Motive werden beim Anzeigen über SVG-Ausschnitte ausgewählt. Es handelt sich nicht um echte Fotoaufnahmen.
+
+# Frühere Illustrationen (für Kompatibilität beibehalten)
+
 # Bildnachweise
 
 Die SVGs 1, 3–6, 8, 10–13 und 15 stammen aus Twemoji 16.0.1:

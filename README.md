@@ -38,4 +38,6 @@ Der Spielstand wird automatisch im lokalen Browser gespeichert. Kein Server, Kon
 
 `npm test` testet manuelle Punkte, Rundenwechsel, Speichern, Bild-Uploads, Migration und Desktop-/Mobilansicht mit Playwright. Chromium muss unter `/usr/bin/chromium` installiert sein; alternativ `CHROMIUM_PATH` setzen.
 
-Beim Aufdecken zeigt jede Runde eine Illustration und den Gegenstand als Überschrift. Unter „Teams & Gegenstände“ kann pro Runde ein eigenes PNG-, JPG- oder WebP-Bild (bis 5 MB) hochgeladen werden. Bilder werden lokal verkleinert und mit dem Spielstand im Browser gespeichert. Über „Standardbild verwenden“ lässt sich das jeweilige Original wiederherstellen. Bildnachweise stehen in `public/items/ATTRIBUTION.md`.
+Beim Aufdecken zeigt jede Runde ein fotorealistisches, KI-generiertes Bild und den Gegenstand als Überschrift. Unter „Teams & Gegenstände“ kann pro Runde ein eigenes PNG-, JPG- oder WebP-Bild (bis 5 MB) hochgeladen werden. Bilder werden lokal verkleinert und mit dem Spielstand im Browser gespeichert. Über „Standardbild verwenden“ lässt sich das jeweilige Original wiederherstellen. Bildnachweise stehen in `public/items/ATTRIBUTION.md`.
+
+Die 15 Standardbilder sind fotorealistische KI-generierte Produktmotive und liegen lokal im Projekt; beim Spielen sind keine externen Bilddienste erforderlich. Eigene hochgeladene Bilder werden weiterhin verwendet.
