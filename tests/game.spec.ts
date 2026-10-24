@@ -1,73 +1,64 @@
 import { test, expect } from '@playwright/test';
-test('15 rounds, one point each, persistence, undo and final result', async ({ page }) => {
+
+test('manual points persist independently of rounds, support correction and reset', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Eine Rolle Klopapier' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Team 1 minus 1 Punkt' })).toBeDisabled();
   await page.getByRole('button', { name: 'Teams & Gegenstände' }).click();
   await page.getByLabel('Team 1', { exact: true }).fill('Anna');
-  await page.getByLabel('Runde 1', { exact: true }).fill('Einen roten Schuh');
   await page.getByRole('button', { name: 'Zum Spielfeld' }).click();
   await page.getByRole('button', { name: 'Runde 1 starten' }).click();
-  await expect(page.getByRole('heading', { name: 'Einen roten Schuh' })).toBeVisible();
-  await page.getByRole('button', { name: 'Anna +1' }).click();
+  await page.getByRole('button', { name: 'Anna plus 1 Punkt' }).click();
+  await page.getByRole('button', { name: 'Anna plus 1 Punkt' }).click();
+  await page.getByRole('button', { name: 'Anna minus 1 Punkt' }).click();
+  await expect(page.getByRole('heading', { name: 'Eine Rolle Klopapier' })).toBeVisible();
   await page.reload();
-  await expect(page.locator('.team-card').first().locator('.score')).toHaveText('1');
-  await page.getByRole('button', { name: 'Letzte Wertung zurücknehmen' }).click();
-  await expect(page.locator('.team-card').first().locator('.score')).toHaveText('0');
-  await expect(page.getByRole('heading', { name: 'Einen roten Schuh' })).toBeVisible();
-  await page.getByRole('button', { name: 'Anna +1' }).click();
-  for (let round = 2; round <= 15; round++) {
-    await page.getByRole('button', { name: `Runde ${round} starten` }).click();
-    await page.getByRole('button', { name: 'Anna +1' }).click();
-  }
+  await expect(page.getByLabel('Anna Punktestand', { exact: true })).toHaveText('1');
+  await page.getByRole('button', { name: 'Nächste Runde' }).click();
+  await expect(page.getByRole('heading', { name: 'Eine Zigarettenschachtel' })).toBeVisible();
+  await page.getByRole('button', { name: 'Vorherige Runde' }).click();
+  await expect(page.getByRole('heading', { name: 'Eine Rolle Klopapier' })).toBeVisible();
+  await expect(page.getByLabel('Anna Punktestand', { exact: true })).toHaveText('1');
+  for (let i = 1; i < 15; i++) await page.getByRole('button', { name: 'Nächste Runde' }).click();
+  await page.getByRole('button', { name: 'Spiel beenden' }).click();
   await expect(page.getByRole('heading', { name: 'Anna', exact: true })).toBeVisible();
-  await expect(page.locator('.team-card').first().locator('.score')).toHaveText('15');
-  await expect(page.getByRole('button', { name: /Runde 16/ })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Rundenverlauf' }).click();
-  await expect(page.locator('.history li')).toHaveCount(15);
+  await page.getByRole('button', { name: 'Team 2 plus 1 Punkt' }).click();
+  await expect(page.getByText('GLEICHSTAND', { exact: true })).toBeVisible();
   page.once('dialog', d => d.accept());
-  await page.getByRole('button', { name: 'Neues Spiel', exact: true }).click();
-  await expect(page.locator('.team-card').first().locator('.score')).toHaveText('0');
-  await page.getByRole('button', { name: 'Runde 1 starten' }).click();
-  await expect(page.getByRole('heading', { name: 'Einen roten Schuh' })).toBeVisible();
-});
-test('skip, locked editing, tie and mobile layout', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Runde 1 starten' }).click();
-  await page.getByRole('button', { name: 'Teams & Gegenstände' }).click();
-  await expect(page.getByLabel('Runde 1', { exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: 'Zum Spielfeld' }).click();
-  page.on('dialog', d => d.accept());
-  await page.getByRole('button', { name: /Niemand gefunden/ }).click();
-  for (let round = 2; round <= 15; round++) {
-    await page.getByRole('button', { name: `Runde ${round} starten` }).click();
-    await page.getByRole('button', { name: `Team ${round % 2 + 1} +1` }).click();
-  }
-  await expect(page.getByText('GLEICHSTAND AN DER SPITZE')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Team 1 & Team 2', exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
+  await page.getByRole('button', { name: 'Neues Spiel', exact: true }).first().click();
+  await expect(page.getByLabel('Anna Punktestand', { exact: true })).toHaveText('0');
+  await expect(page.getByRole('button', { name: 'Runde 1 starten' })).toBeVisible();
 });
 
-test('reveals a loaded picture with every heading and migrates old saves', async ({ page }) => {
+test('all pictures load, old scores migrate and reveal fits desktop and mobile', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => {
     const key = 'jubilaeum-brings-mit-v1';
     const game = JSON.parse(localStorage.getItem(key)!);
-    delete game.images;
+    delete game.images; delete game.scores;
+    game.results = [0, 0, 1];
     localStorage.setItem(key, JSON.stringify(game));
   });
   await page.reload();
-  await expect(page.locator('.item-image')).toHaveCount(0);
+  await expect(page.getByLabel('Team 1 Punktestand', { exact: true })).toHaveText('2');
+  await expect(page.getByLabel('Team 2 Punktestand', { exact: true })).toHaveText('1');
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Vorherige Runde' }).click();
+  await expect(page.getByLabel('Team 1 Punktestand', { exact: true })).toHaveText('2');
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const image = page.locator('.item-image');
+    const box = await image.boundingBox();
+    expect(box!.height).toBeGreaterThan(150);
+    const next = await page.getByRole('button', { name: 'Nächste Runde' }).boundingBox();
+    const stage = await page.locator('.hunt-stage').boundingBox();
+    expect(next!.y + next!.height).toBeLessThanOrEqual(stage!.y + stage!.height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
   for (let round = 1; round <= 15; round++) {
-    await page.getByRole('button', { name: `Runde ${round} starten` }).click();
     const picture = page.locator('.item-image');
-    await expect(picture).toBeVisible();
     await expect(picture).toHaveAttribute('src', `/items/${round}.svg`);
     await expect.poll(() => picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
-    const title = await page.locator('.item-reveal h2').innerText();
-    await expect(picture).toHaveAttribute('alt', title);
-    await page.getByRole('button', { name: 'Team 1 +1' }).click();
+    await expect(picture).toHaveAttribute('alt', await page.locator('.item-reveal h2').innerText());
+    await page.getByRole('button', { name: round === 15 ? 'Spiel beenden' : 'Nächste Runde' }).click();
   }
 });
 
