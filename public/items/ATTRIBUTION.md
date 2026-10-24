@@ -1,5 +1,7 @@
 # Aktuelle Standardbilder
 
+`beer-photo.png` zeigt eine für dieses Spiel KI-generierte Bierflasche und ersetzt das frühere Herz-Motiv in Runde 15.
+
 `objects-photo.png` wurde für dieses Spiel mit KI als fotorealistische Produktbildtafel generiert. Die einzelnen Motive werden beim Anzeigen über SVG-Ausschnitte ausgewählt. Es handelt sich nicht um echte Fotoaufnahmen.
 
 # Frühere Illustrationen (für Kompatibilität beibehalten)

@@ -35,6 +35,7 @@ test('all pictures load, old scores migrate and reveal fits desktop and mobile',
     const key = 'jubilaeum-brings-mit-v1';
     const game = JSON.parse(localStorage.getItem(key)!);
     delete game.images; delete game.scores;
+    game.items[14] = 'Einen Gegenstand mit Herz';
     game.results = [0, 0, 1];
     localStorage.setItem(key, JSON.stringify(game));
   });
@@ -56,8 +57,15 @@ test('all pictures load, old scores migrate and reveal fits desktop and mobile',
   for (let round = 1; round <= 15; round++) {
     const picture = page.locator('.item-image');
     await expect(picture).toHaveAttribute('data-source', `/items/${round}.svg`);
+    if (round === 15) {
+      await expect(page.getByRole('heading', { name: 'Ein Bier', exact: true })).toBeVisible();
+      await expect(picture).toHaveAttribute('src', '/items/beer-photo.png');
+      await expect.poll(() => picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+      await expect(picture).toHaveAttribute('alt', 'Ein Bier');
+    } else {
     await expect.poll(() => picture.locator('image').evaluate(async (el: SVGImageElement) => { const img = new Image(); img.src = el.href.baseVal; try { await img.decode(); return img.naturalWidth === 1619; } catch { return false; } })).toBe(true);
     await expect(picture).toHaveAttribute('aria-label', await page.locator('.item-reveal h2').innerText());
+    }
     await page.getByRole('button', { name: round === 15 ? 'Spiel beenden' : 'Nächste Runde' }).click();
   }
 });

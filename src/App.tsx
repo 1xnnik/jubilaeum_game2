@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ItemImage } from './ItemImage';
 
 const KEY = 'jubilaeum-brings-mit-v1';
-const defaults = ['Eine Rolle Klopapier', 'Eine Zigarettenschachtel', 'Einen Schlüsselbund', 'Eine Sonnenbrille', 'Eine Münze', 'Einen Kugelschreiber', 'Ein Taschentuch', 'Eine Armbanduhr', 'Einen Flaschenöffner', 'Einen Kamm oder eine Bürste', 'Einen Kassenbon', 'Eine Socke', 'Einen Lippenpflegestift', 'Eine Packung Kaugummi', 'Einen Gegenstand mit Herz'];
+const defaults = ['Eine Rolle Klopapier', 'Eine Zigarettenschachtel', 'Einen Schlüsselbund', 'Eine Sonnenbrille', 'Eine Münze', 'Einen Kugelschreiber', 'Ein Taschentuch', 'Eine Armbanduhr', 'Einen Flaschenöffner', 'Einen Kamm oder eine Bürste', 'Einen Kassenbon', 'Eine Socke', 'Einen Lippenpflegestift', 'Eine Packung Kaugummi', 'Ein Bier'];
 const defaultImages = defaults.map((_, i) => `/items/${i + 1}.svg`);
 const colors = ['#cba34c', '#7ba9c9', '#a68ac9', '#74aa8c'];
 type Game = { names: string[]; items: string[]; images: string[]; scores: number[]; results: (number | null)[]; active: boolean };
@@ -10,6 +10,10 @@ const fresh = (): Game => ({ names: ['Team 1', 'Team 2', 'Team 3', 'Team 4'], it
 function load(): Game {
   try {
     const g = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (Array.isArray(g?.items) && g.items[14] === 'Einen Gegenstand mit Herz') {
+      g.items[14] = defaults[14];
+      if (Array.isArray(g.images)) g.images[14] = defaultImages[14];
+    }
     if (g && Array.isArray(g.names) && g.names.length === 4 && g.names.every((n: unknown) => typeof n === 'string' && n.length <= 40) && Array.isArray(g.items) && g.items.length === 15 && g.items.every((n: unknown) => typeof n === 'string' && n.trim() && n.length <= 120) && Array.isArray(g.results) && g.results.length <= 15 && g.results.every((n: unknown) => n === null || (Number.isInteger(n) && Number(n) >= 0 && Number(n) < 4)) && typeof g.active === 'boolean' && !(g.active && g.results.length === 15)) return { ...g, scores: Array.isArray(g.scores) && g.scores.length === 4 && g.scores.every((v: unknown) => Number.isSafeInteger(v) && Number(v) >= 0) ? g.scores : g.names.map((_: string, i: number) => g.results.filter((r: number | null) => r === i).length), images: Array.isArray(g.images) && g.images.length === 15 && g.images.every((v: unknown) => typeof v === "string" && (v.startsWith("/items/") || /^data:image\/(png|jpeg|webp);base64,/.test(v))) ? g.images : [...defaultImages] };
   } catch { /* Start fresh if stored data is unavailable or invalid. */ }
   return fresh();
